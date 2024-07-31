@@ -101,6 +101,12 @@ public:
     virtual uint32_t getSupportedOpsetVersion() const = 0;
 
     /**
+     * @brief Returns a list with the options supported by the compiler
+     * @return TBD
+     */
+    virtual std::string getSupportedOptions() const = 0;
+
+    /**
      * @brief Transforms a network from the OpenVINO model representation to a format executable
      * by a NPU device
      * @param model a shared pointer to the OpenVINO model to be compiled

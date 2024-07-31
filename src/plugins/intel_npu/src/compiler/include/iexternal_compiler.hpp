@@ -27,6 +27,11 @@ public:
     virtual uint32_t getSupportedOpset() const = 0;
 
     /**
+     * @brief Get options set supported by compiler
+     */
+    virtual std::string getSupportedOptions() const = 0;
+
+    /**
      * @brief Get query result for current network
      */
     virtual std::unordered_set<std::string> getQueryResult(IR& irModel, const Config& config) const = 0;

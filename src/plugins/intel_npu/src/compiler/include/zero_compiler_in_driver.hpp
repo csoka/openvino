@@ -48,6 +48,7 @@ public:
     ~LevelZeroCompilerInDriver() override;
 
     uint32_t getSupportedOpset() const override;
+    std::string getSupportedOptions() const override;
 
     std::unordered_set<std::string> getQueryResult(IR& irModel, const Config& config) const override;
 

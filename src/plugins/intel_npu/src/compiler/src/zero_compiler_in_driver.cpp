@@ -860,7 +860,15 @@ uint32_t LevelZeroCompilerInDriver<TableExtension>::getSupportedOpset() const {
     }
     const auto maxOpsetVersion = graphProperties.maxOVOpsetVersionSupported;
     _logger.info("getSupportedOpset Max supported version of opset in CiD: %d", maxOpsetVersion);
+    printf("[CSOKADBG] getSupportedOpset Max supported version of opset in CiD: %d\n", maxOpsetVersion);
     return maxOpsetVersion;
+}
+
+template <typename TableExtension>
+std::string LevelZeroCompilerInDriver<TableExtension>::getSupportedOptions() const {
+    _logger.debug("getSupportedOptions");
+    std::string dummy = "TEST_STRING_OPTION1 TEST_STRING_OPTION2 TEST_STRING_OPTION3";
+    return dummy;
 }
 
 template <typename TableExtension>

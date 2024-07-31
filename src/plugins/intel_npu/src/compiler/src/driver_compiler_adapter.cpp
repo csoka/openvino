@@ -180,6 +180,10 @@ uint32_t LevelZeroCompilerAdapter::getSupportedOpsetVersion() const {
     return apiAdapter->getSupportedOpset();
 }
 
+std::string LevelZeroCompilerAdapter::getSupportedOptions() const {
+    return apiAdapter->getSupportedOptions();
+}
+
 NetworkDescription LevelZeroCompilerAdapter::compile(const std::shared_ptr<const ov::Model>& model,
                                                      const Config& config) const {
     _logger.setLevel(config.get<LOG_LEVEL>());
