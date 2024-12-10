@@ -496,4 +496,24 @@ std::string DriverCompilerAdapter::serializeConfig(const Config& config,
     return "--config " + content;
 }
 
+std::vector<std::string> DriverCompilerAdapter::getSupportedOptions() const {
+    std::string compilerOptionsStr = _zeGraphExt->getCompilerSupportedOptions();
+    // vectorize string
+    std::istringstream suppstream(compilerOptionsStr);
+    std::vector<std::string> compilerOpts;
+    std::string option;
+    while (suppstream >> option) {
+        compilerOpts.push_back(option);
+    }
+    return compilerOpts;
+}
+
+bool DriverCompilerAdapter::isOptionSupported(std::string optname) const {
+    return _zeGraphExt->isOptionSupported(optname);
+}
+
+uint32_t DriverCompilerAdapter::getVersion() const {
+    return _zeGraphExt->getCompilerVersion();
+}
+
 }  // namespace intel_npu

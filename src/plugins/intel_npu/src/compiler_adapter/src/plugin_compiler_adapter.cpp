@@ -135,4 +135,54 @@ ov::SupportedOpsMap PluginCompilerAdapter::query(const std::shared_ptr<const ov:
     return _compiler->query(model, config);
 }
 
+std::vector<std::string> PluginCompilerAdapter::getSupportedOptions() const {
+    /// PLACEHOLDER
+    std::string test_supported_options = {"NPU_TURBO "
+                                          "NPU_BYPASS_UMD_CACHING "
+                                          "WORKLOAD_TYPE NPU_COMPILATION_MODE "
+                                          "CACHE_DIR NPU_TILES "
+                                          "LOADED_FROM_CACHE "
+                                          "LOG_LEVEL "
+                                          "NPU_BATCH_MODE "
+                                          "DEVICE_ID "
+                                          "NPU_COMPILER_TYPE "
+                                          "NPU_PLATFORM "
+                                          "INFERENCE_PRECISION_HINT "
+                                          "PERFORMANCE_HINT_NUM_REQUESTS "
+                                          "NPU_COMPILATION_MODE_PARAMS "
+                                          "NPU_DMA_ENGINES "
+                                          "PERFORMANCE_HINT "
+                                          "EXCLUSIVE_ASYNC_REQUESTS "
+                                          "NUM_STREAMS "
+                                          "NPU_BACKEND_COMPILATION_PARAMS "
+                                          "NPU_USE_ELF_COMPILER_BACKEND "
+                                          "NPU_MAX_TILES "
+                                          "COMPILATION_NUM_THREADS "
+                                          "NPU_DPU_GROUPS "
+                                          "EXECUTION_MODE_HINT "
+                                          "NPU_STEPPING "
+                                          "NPU_DYNAMIC_SHAPE_TO_STATIC "
+                                          "ENABLE_CPU_PINNING "
+                                          "NPU_PROFILING_TYPE "
+                                          "PERF_COUNT "
+                                          "MODEL_PRIORITY "
+                                          "NPU_CREATE_EXECUTOR"};
+    // vectorize string
+    std::istringstream suppstream(test_supported_options);
+    std::vector<std::string> compilerOpts;
+    std::string option;
+    while (suppstream >> option) {
+        compilerOpts.push_back(option);
+    }
+    return compilerOpts;
+}
+
+bool PluginCompilerAdapter::isOptionSupported(std::string optname) const {
+    return false;
+}
+
+uint32_t PluginCompilerAdapter::getVersion() const {
+    return 0;
+}
+
 }  // namespace intel_npu

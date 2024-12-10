@@ -53,8 +53,9 @@ public:
                                     const ov::AnyMap& properties) const override;
 
 private:
+    std::unique_ptr<ICompilerAdapter> getCompiler(ov::intel_npu::CompilerType compType) const;
     std::unique_ptr<ICompilerAdapter> getCompiler(const Config& config) const;
-    void init_options(uint32_t comp_ver);
+    void init_options();
     void init_properties();
 
     std::shared_ptr<NPUBackends> _backends;

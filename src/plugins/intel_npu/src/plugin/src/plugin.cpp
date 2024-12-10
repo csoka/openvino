@@ -209,23 +209,36 @@ Plugin::Plugin()
     OV_ITT_TASK_CHAIN(PLUGIN, itt::domains::NPUPlugin, "Plugin::Plugin", "NPUBackends");
     _backends = std::make_shared<NPUBackends>(backendRegistry, _globalConfig);
 
-    /// Fetch CID version and create properties list
-    OV_ITT_TASK_NEXT(PLUGIN, "FetchCompilerVer");
-    uint32_t cid_ver = _backends->getCompilerVersion();
-
     OV_ITT_TASK_NEXT(PLUGIN, "Metrics");
     _metrics = std::make_shared<Metrics>(_backends);
 
-    init_options(cid_ver);
+    OV_ITT_TASK_NEXT(PLUGIN, "InitOptions");
+    init_options();
+
     /// Init and register properties
+    OV_ITT_TASK_NEXT(PLUGIN, "RegisterProperties");
     _properties = std::make_unique<Properties>(PropertiesType::PLUGIN, _globalConfig, _metrics);
     _properties->registerProperties();
 }
 
-void Plugin::init_options(uint32_t comp_ver) {
+void Plugin::init_options() {
+    // create a dummy compiler to fetch version and supported options
+    auto dummyCompiler = getCompiler(ov::intel_npu::CompilerType::DRIVER);
+    uint32_t compilerVersion = dummyCompiler->getVersion();
+    std::vector<std::string> compilerSupOptions = dummyCompiler->getSupportedOptions();
+    /// DEBUG
+    std::cout << "Compiler version: " << compilerVersion << std::endl;
+    std::cout << "Compiler supported options (" << compilerSupOptions.size() << "): ";
+    for (const auto& str : compilerSupOptions) {
+        std::cout << str << " ";
+    }
+    std::cout << std::endl;
+    /// DEBUG
+
     // Initialize (note: it will reset registered options)
     _options->reset();
-    _options->setCompilerVersion(comp_ver);
+    _options->setCompilerVersion(compilerVersion);
+    _options->setCompilerSupportedOptions(compilerSupOptions);
     OV_ITT_TASK_NEXT(PLUGIN, "initOptions");
     registerOptions(*_options, OptionMode::RunTime);
     registerOptions(*_options, OptionMode::Both);
@@ -239,6 +252,22 @@ void Plugin::init_options(uint32_t comp_ver) {
         _options->remove(ov::workload_type.name());
         _options->remove(ov::intel_npu::turbo.name());
     }
+
+    // TODO:REMOVE
+    // POC test for isOptionSupported
+    std::string dummyOption1("DUMMY_TEST_OPTION1");
+    std::string dummyOption2("DUMMY_TEST_OPTION2");
+    if (dummyCompiler->isOptionSupported(dummyOption1)) {
+        std::cout << dummyOption1 << " is supported by compiler!" << std::endl;
+    } else {
+        std::cout << dummyOption1 << " is NOT supported by compiler!" << std::endl;
+    }
+    if (dummyCompiler->isOptionSupported(dummyOption2)) {
+        std::cout << dummyOption2 << " is supported by compiler!" << std::endl;
+    } else {
+        std::cout << dummyOption2 << " is NOT supported by compiler!" << std::endl;
+    }
+    // END of POC
 
     // parse again env_variables after backend is initialized to get backend proprieties
     _globalConfig.parseEnvVars();
@@ -478,7 +507,11 @@ ov::SupportedOpsMap Plugin::query_model(const std::shared_ptr<const ov::Model>& 
 }
 
 std::unique_ptr<ICompilerAdapter> Plugin::getCompiler(const Config& config) const {
-    auto compilerType = config.get<COMPILER_TYPE>();
+    ov::intel_npu::CompilerType compilerType = config.get<COMPILER_TYPE>();
+    return getCompiler(compilerType);
+}
+
+std::unique_ptr<ICompilerAdapter> Plugin::getCompiler(ov::intel_npu::CompilerType compilerType) const {
     _logger.debug("performing createCompiler");
 
     switch (compilerType) {

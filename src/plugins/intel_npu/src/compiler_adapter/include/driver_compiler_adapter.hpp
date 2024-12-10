@@ -30,6 +30,12 @@ public:
 
     ov::SupportedOpsMap query(const std::shared_ptr<const ov::Model>& model, const Config& config) const override;
 
+    std::vector<std::string> getSupportedOptions() const override;
+
+    bool isOptionSupported(std::string optname) const override;
+
+    uint32_t getVersion() const override;
+
 private:
     /**
      * @brief Serialize input / output information to string format.
