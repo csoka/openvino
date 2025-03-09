@@ -407,8 +407,14 @@ std::string DriverCompilerAdapter::serializeConfig(const Config& config,
                                                    ze_graph_compiler_version_info_t compilerVersion) const {
     Logger logger("serializeConfig", Logger::global().level());
 
-    std::string content = config.toStringForCompiler();
-    content += " " + config.toStringForCompilerInternal();
+    std::string content = {};  // config.toStringForCompiler();
+    // Safe downcast using dynamic_cast
+    if (PluginConfig* derivedPtr = dynamic_cast<Config*>(config)) {
+        content += derivedPtr->toStringForCompiler();  // Success
+        content += derivedPtr->toStringForCompilerInternal();
+    } else {
+        std::cout << "Downcast failed\n";
+    }
 
     logger.debug("Original content of config: %s", content.c_str());
 
